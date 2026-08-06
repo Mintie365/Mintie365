@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RKHS 基础报告 · 中文讲稿（第 1–30 页）</title>
+<script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [['\\(', '\\)'], ['$', '$']],
+      displayMath: [['\\[', '\\]'], ['$$', '$$']],
+      processEscapes: true,
+      tags: 'none'
+    },
+    options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] }
+  };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+<style>
+  :root {
+    --accent: #6d3bd1;
+    --accent-soft: #f2ecfc;
+    --ink: #1f2430;
+    --muted: #5c6470;
+    --line: #e4e0ee;
+    --bg: #faf9fd;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+                 "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+    line-height: 1.85;
+    font-size: 17px;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 48px 24px 96px; }
+  header.title {
+    text-align: center;
+    padding: 40px 24px;
+    background: linear-gradient(135deg, #6d3bd1, #9a6bec);
+    color: #fff;
+    border-radius: 18px;
+    margin-bottom: 20px;
+    box-shadow: 0 12px 30px rgba(109,59,209,0.25);
+  }
+  header.title h1 { margin: 0 0 8px; font-size: 30px; letter-spacing: 0.5px; }
+  header.title p { margin: 4px 0; opacity: 0.92; font-size: 15px; }
+  .meta-note {
+    background: var(--accent-soft);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 14px 18px;
+    font-size: 14.5px;
+    color: var(--muted);
+    margin-bottom: 36px;
+  }
+  .toc {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 20px 26px;
+    margin-bottom: 40px;
+  }
+  .toc h2 { margin: 0 0 12px; font-size: 18px; color: var(--accent); }
+  .toc ol { margin: 0; padding-left: 22px; columns: 2; column-gap: 32px; }
+  .toc li { margin: 3px 0; font-size: 14px; break-inside: avoid; }
+  .toc a { color: var(--ink); text-decoration: none; }
+  .toc a:hover { color: var(--accent); text-decoration: underline; }
+  section.slide {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 26px 30px;
+    margin-bottom: 26px;
+    box-shadow: 0 2px 10px rgba(31,36,48,0.03);
+  }
+  section.slide h2 {
+    margin: 0 0 6px;
+    font-size: 20px;
+    color: var(--accent);
+    border-bottom: 2px solid var(--accent-soft);
+    padding-bottom: 10px;
+  }
+  .pagetag {
+    display: inline-block;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #fff;
+    background: var(--accent);
+    border-radius: 20px;
+    padding: 2px 12px;
+    margin-bottom: 12px;
+  }
+  section.slide h3 {
+    font-size: 16px;
+    margin: 20px 0 6px;
+    color: var(--ink);
+  }
+  p { margin: 10px 0; }
+  ul, ol.body { margin: 10px 0; padding-left: 24px; }
+  li { margin: 5px 0; }
+  strong { color: #3d2a63; }
+  .callout {
+    background: var(--accent-soft);
+    border-left: 4px solid var(--accent);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin: 16px 0;
+    font-size: 15.5px;
+  }
+  .tip {
+    background: #eefaf3;
+    border-left: 4px solid #2fa96b;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin: 16px 0;
+    font-size: 15px;
+    color: #1f5c3d;
+  }
+  .tip strong { color: #17492f; }
+  .divider {
+    text-align: center;
+    color: var(--muted);
+    margin: 40px 0 8px;
+    font-size: 14px;
+    letter-spacing: 2px;
+  }
+  mjx-container { overflow-x: auto; overflow-y: hidden; max-width: 100%; }
+  @media (max-width: 640px) {
+    .toc ol { columns: 1; }
+    .wrap { padding: 24px 14px 64px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="title">
+  <h1>RKHS Foundations · 中文讲稿</h1>
+  <p>再生核希尔伯特空间（Reproducing Kernel Hilbert Spaces）· 第 1–4 章</p>
+  <p>报告人：SUN Qi · 香港理工大学 · 2026 年 8 月 6 日</p>
+  <p style="margin-top:10px; font-weight:600;">本册内容：第 1–30 页 逐页详细讲稿</p>
+</header>
+
+<div class="meta-note">
+  说明：本文档中的所有数学公式均通过 MathJax 渲染。请使用浏览器（Chrome / Edge / Safari / Firefox）打开本文件，并保持联网，公式会自动排版为清晰的数学格式。若公式暂时显示为源码，请稍等片刻等待脚本加载完成。
+</div>
+
+<nav class="toc">
+  <h2>目录（第 1–30 页）</h2>
+  <ol>
+    <li><a href="#p1">第 1 页 · 封面</a></li>
+    <li><a href="#p2">第 2 页 · 报告路线图</a></li>
+    <li><a href="#p3">第 3 页 · 进入第一章</a></li>
+    <li><a href="#p4">第 4 页 · 定义 1：内积</a></li>
+    <li><a href="#p5">第 5 页 · 定义 2：希尔伯特空间</a></li>
+    <li><a href="#p6">第 6 页 · 定义 3：核</a></li>
+    <li><a href="#p7">第 7 页 · 一个核，多种特征映射</a></li>
+    <li><a href="#p8">第 8 页 · 定义 4：正定函数</a></li>
+    <li><a href="#p9">第 9 页 · 引理 5：核都是正定函数</a></li>
+    <li><a href="#p10">第 10 页 · 进入第二章</a></li>
+    <li><a href="#p11">第 11 页 · 记号：标量域与核截面</a></li>
+    <li><a href="#p12">第 12 页 · 定义 4.18：再生核与 RKHS</a></li>
+    <li><a href="#p13">第 13 页 · 什么是泛函</a></li>
+    <li><a href="#p14">第 14 页 · 引理 4.19：再生核也是核</a></li>
+    <li><a href="#p15">第 15 页 · 引理 4.19 续：H 是特征空间</a></li>
+    <li><a href="#p16">第 16 页 · 定理 4.20：唯一的核</a></li>
+    <li><a href="#p17">第 17 页 · 定理 4.20 证明总览</a></li>
+    <li><a href="#p18">第 18 页 · 证明 1a：再生性质</a></li>
+    <li><a href="#p19">第 19 页 · 证明 1a：验证再生性</a></li>
+    <li><a href="#p20">第 20 页 · 证明 1b：唯一性</a></li>
+    <li><a href="#p21">第 21 页 · 证明 2a：展开核截面</a></li>
+    <li><a href="#p22">第 22 页 · 证明 2b：公式 (4.9)</a></li>
+    <li><a href="#p23">第 23 页 · 定理 4.21：唯一的 RKHS</a></li>
+    <li><a href="#p24">第 24 页 · 证明 步骤 1：有效特征空间</a></li>
+    <li><a href="#p25">第 25 页 · 证明 步骤 2：范数与完备性</a></li>
+    <li><a href="#p26">第 26 页 · 证明 步骤 3：再生性质</a></li>
+    <li><a href="#p27">第 27 页 · 证明 步骤 4a：公共稠密子空间</a></li>
+    <li><a href="#p28">第 28 页 · 证明 步骤 4b：范数由 k 决定</a></li>
+    <li><a href="#p29">第 29 页 · 证明 步骤 5：唯一性</a></li>
+    <li><a href="#p30">第 30 页 · 第二章小结</a></li>
+  </ol>
+</nav>
+
+<section class="slide" id="p1">
+  <span class="pagetag">第 1 页</span>
+  <h2>封面（Title Page）</h2>
+  <p>各位老师、同学好。我今天报告的题目是 <strong>《RKHS Foundations——再生核希尔伯特空间基础》</strong>（Reproducing Kernel Hilbert Spaces）。这次报告主要覆盖原书的第 1 到第 4 章内容。我是来自香港理工大学（The Hong Kong Polytechnic University）的 SUN Qi，报告日期是 2026 年 8 月 6 日。</p>
+  <p>开场引入：再生核希尔伯特空间，简称 RKHS，是现代机器学习中"核方法"（kernel methods）的数学基石。支持向量机、高斯过程、核岭回归等方法背后统一的理论框架，正是 RKHS。今天我会从最基础的内积、希尔伯特空间讲起，一步步搭建起核、正定函数，再到再生核希尔伯特空间的核心定理与性质。</p>
+</section>
+
+<section class="slide" id="p2">
+  <span class="pagetag">第 2 页</span>
+  <h2>报告路线图（Roadmap）</h2>
+  <p>这一页是整个报告的大纲，一共分为四个部分：</p>
+  <ol class="body">
+    <li><strong>Preliminaries（预备知识）</strong>：介绍内积、希尔伯特空间、核、正定函数等基本概念；</li>
+    <li><strong>The Reproducing Kernel Hilbert Space of a Kernel（核所对应的再生核希尔伯特空间）</strong>：核心章节，讲 RKHS 的定义以及两个关键定理——每个 RKHS 有唯一的核、每个核有唯一的 RKHS；</li>
+    <li><strong>Properties of RKHSs（RKHS 的性质）</strong>：讲核的正则性（有界、连续、可微）如何"遗传"给空间中的函数；</li>
+    <li><strong>Appendix（附录）</strong>：补充可测性、可积性、算子结构等进一步结论，以及一致极限定理的证明。</li>
+  </ol>
+  <p>逻辑安排：先打地基（概念），再立柱子（存在唯一性定理），然后看这栋楼的性质（函数继承核的性质），最后附录做补充。</p>
+</section>
+
+<section class="slide" id="p3">
+  <span class="pagetag">第 3 页</span>
+  <h2>进入第一章：预备知识</h2>
+  <p>这一页是章节切换页，高亮了第 1 部分 <strong>Preliminaries（预备知识）</strong>。这类页面在报告中反复出现，作用是提示听众"我们现在走到了哪一步"。接下来我们正式进入第一章，先从最基础的<strong>内积</strong>讲起。</p>
+</section>
+
+<section class="slide" id="p4">
+  <span class="pagetag">第 4 页</span>
+  <h2>定义 1：内积（Inner Product）</h2>
+  <p>设 \(H\) 是实数域 \(\mathbb{R}\) 上的一个向量空间。一个函数</p>
+  \[ \langle \cdot, \cdot \rangle_H : H \times H \longrightarrow \mathbb{R} \]
+  <p>被称为<strong>内积</strong>，如果对所有 \(f, f_1, f_2, g \in H\) 和标量 \(\alpha_1, \alpha_2 \in \mathbb{R}\)，它满足以下四条性质：</p>
+  <ol class="body">
+    <li><strong>线性性（Linearity）</strong>：\(\langle \alpha_1 f_1 + \alpha_2 f_2,\, g \rangle_H = \alpha_1 \langle f_1, g\rangle_H + \alpha_2 \langle f_2, g\rangle_H\)。内积对第一个变量线性。</li>
+    <li><strong>对称性（Symmetry）</strong>：\(\langle f, g\rangle_H = \langle g, f\rangle_H\)。交换两个参数，内积值不变。（复数情形应换成共轭对称。）</li>
+    <li><strong>非负性（Non-negativity）</strong>：\(\langle f, f\rangle_H \ge 0\)。向量与自身的内积永远非负。</li>
+    <li><strong>确定性（Definiteness）</strong>：\(\langle f, f\rangle_H = 0\) 当且仅当 \(f = 0\)。只有零向量与自身内积为零。</li>
+  </ol>
+  <p>由内积可以<strong>诱导出范数</strong>：</p>
+  \[ \|f\|_H := \sqrt{\langle f, f\rangle_H}. \]
+  <div class="tip"><strong>讲解要点：</strong>内积不只是数值运算，它同时赋予空间"长度"（范数）与"角度"（正交性）的几何结构。第 1、2 条合起来意味着内积对两个变量都线性；第 3、4 条保证范数良定义且能区分不同向量。</div>
+</section>
+
+<section class="slide" id="p5">
+  <span class="pagetag">第 5 页</span>
+  <h2>定义 2：希尔伯特空间（Hilbert Space）</h2>
+  <p><strong>定义：</strong>一个希尔伯特空间，是配备了内积 \(\langle \cdot,\cdot\rangle_H\) 的向量空间，并且关于该内积诱导的范数是<strong>完备的（complete）</strong>。</p>
+  <h3>"完备"是什么意思</h3>
+  <ul>
+    <li><strong>每一个柯西序列都收敛到空间内部的一个极限。</strong></li>
+    <li>通俗地说：空间没有"缺失的极限点"或"缝隙"。例如<strong>有理数集不完备</strong>——\(\sqrt{2}\) 可以用有理数逼近，但极限本身不是有理数，所以有理数里有"洞"。</li>
+  </ul>
+  <h3>为什么希尔伯特空间重要</h3>
+  <ul>
+    <li>它们<strong>推广了欧几里得几何</strong>（把有限维的长度、角度概念推广到更一般空间）；</li>
+    <li>它们<strong>可以是无穷维的</strong>；</li>
+    <li>它们的<strong>内积是空间结构的一部分，而且可以人为选择</strong>——这一点在核方法里非常关键。</li>
+  </ul>
+  <div class="callout">直观总结：\(\text{向量空间} + \text{内积} + \text{完备性} = \text{希尔伯特空间}.\)</div>
+  <div class="tip"><strong>讲解要点：</strong>希尔伯特空间是"最理想"的无穷维空间——既有几何结构（内积），又足够"结实"（完备），使极限运算、级数展开、正交投影都能安全进行。这正是后面构造 RKHS 的舞台。</div>
+</section>
+
+<section class="slide" id="p6">
+  <span class="pagetag">第 6 页</span>
+  <h2>定义 3：核（Kernel）</h2>
+  <p><strong>定义：</strong>函数 \(k : \mathcal{X} \times \mathcal{X} \to \mathbb{R}\) 被称为<strong>核</strong>，如果存在某个希尔伯特空间 \(H\) 和映射 \(\phi : \mathcal{X} \to H\)，使得对任意 \(x, x' \in \mathcal{X}\)：</p>
+  \[ k(x, x') := \langle \phi(x), \phi(x')\rangle_H. \]
+  <p>即核 \(k(x,x')\) 本质上就是把两个输入先映射到希尔伯特空间，再取内积。</p>
+  <ul>
+    <li>\(H\) 称为<strong>特征空间（feature space）</strong>，\(\phi\) 称为<strong>特征映射（feature map）</strong>；</li>
+    <li><strong>两者都不唯一</strong>：不同的特征表示可能诱导出同一个核（下一页给例子）；</li>
+    <li><strong>输入集 \(\mathcal{X}\) 不要求有任何数值结构</strong>：输入可以是字符串、图或其他任意对象。</li>
+  </ul>
+  <div class="tip"><strong>讲解要点：</strong>这就是"核技巧（kernel trick）"的数学定义——我们无需显式计算高维甚至无穷维的 \(\phi(x)\)，只要能算出核 \(k(x,x')\) 即可。</div>
+</section>
+
+<section class="slide" id="p7">
+  <span class="pagetag">第 7 页</span>
+  <h2>一个核，多种特征映射</h2>
+  <p>考虑标量输入 \(x \in \mathbb{R}\)，给出两种不同的特征映射：</p>
+  \[ \phi_1(x) = x, \qquad \phi_2(x) = \begin{pmatrix} \sqrt{2}\,x \\ -x \end{pmatrix}. \]
+  <h3>第一种：标准内积</h3>
+  <p>用 \(\phi_1\)，在 \(\mathbb{R}\) 上用普通乘法：</p>
+  \[ \langle \phi_1(x), \phi_1(x')\rangle = x x'. \]
+  <h3>第二种：在 \(\mathbb{R}^2\) 上人为选择的内积</h3>
+  <p>用 \(\phi_2\) 把 \(x\) 映射到二维，并定义非标准内积 \(\langle u, v\rangle_H = \tfrac{1}{3} u^\top v\)，则</p>
+  \[ \langle \phi_2(x), \phi_2(x')\rangle_H = \tfrac{1}{3}\big(2xx' + xx'\big) = xx'. \]
+  <div class="callout">结论：不同的希尔伯特空间实现，可以编码出同一个相似度 \(k(x, x') = x x'\)。虽然 \(\phi_1 \neq \phi_2\)（一个一维、一个二维，内积也不同），但它们编码出的相似度完全相同。</div>
+  <div class="tip"><strong>讲解要点：</strong>核 \(k\) 是"客观"的相似度度量，特征映射 \(\phi\) 与特征空间 \(H\) 只是它的一种"实现"，并不唯一。这预示了后面的核心问题——能否找到一个"典范的、唯一的"空间？那就是 RKHS。</div>
+</section>
+
+<section class="slide" id="p8">
+  <span class="pagetag">第 8 页</span>
+  <h2>定义 4：正定函数（Positive Definite Function）</h2>
+  <p><strong>定义：</strong>一个<strong>对称</strong>函数 \(k : \mathcal{X} \times \mathcal{X} \to \mathbb{R}\) 被称为<strong>正定的</strong>，如果</p>
+  \[ \sum_{i=1}^{n}\sum_{j=1}^{n} a_i a_j\, k(x_i, x_j) \ge 0 \]
+  <p>对任意 \(n \ge 1\)、任意 \(x_1, \dots, x_n \in \mathcal{X}\) 以及任意实系数 \(a_1, \dots, a_n \in \mathbb{R}\) 都成立。</p>
+  <h3>Gram 矩阵视角</h3>
+  <p>对有限个点 \(x_1, \dots, x_n\)，定义</p>
+  \[ K_{ij} = k(x_i, x_j), \qquad K = (K_{ij})_{i,j=1}^{n}, \qquad a = (a_1, \dots, a_n)^\top. \]
+  <p>那么双重求和可写成二次型：</p>
+  \[ \sum_{i=1}^{n}\sum_{j=1}^{n} a_i a_j\, k(x_i, x_j) = a^\top K a \ge 0 \quad \text{对所有 } a \in \mathbb{R}^n. \]
+  <div class="callout">结论：由正定函数生成的每一个 Gram 矩阵都是半正定的（positive semidefinite）。</div>
+  <div class="tip"><strong>讲解要点：</strong>正定函数的定义完全用"输入点"和"标量系数"刻画，不涉及特征空间。文献中"positive definite"实际对应线性代数里的"半正定"，这是核理论的惯用叫法。</div>
+</section>
+
+<section class="slide" id="p9">
+  <span class="pagetag">第 9 页</span>
+  <h2>引理 5：核都是正定函数</h2>
+  <p><strong>结论：</strong>每一个核都是正定函数。</p>
+  <p><strong>证明：</strong>利用 \(k(x_i, x_j) = \langle \phi(x_i), \phi(x_j)\rangle_H\)，展开双重求和：</p>
+  \[ \sum_{i=1}^{n}\sum_{j=1}^{n} a_i a_j\, k(x_i, x_j) = \sum_{i,j} \langle a_i \phi(x_i),\, a_j \phi(x_j)\rangle_H. \]
+  <p>利用内积的双线性性，把求和号移入内积并合并：</p>
+  \[ = \Big\langle \sum_{i} a_i \phi(x_i),\ \sum_{j} a_j \phi(x_j) \Big\rangle_H = \Big\| \sum_{i=1}^{n} a_i \phi(x_i) \Big\|_H^2 \ge 0. \qquad \square \]
+  <div class="tip"><strong>讲解要点：</strong>直觉很清楚——核值就是内积，二次型就是某个向量的范数平方，自然非负。其逆命题（正定函数 ⇒ 核）也成立，这就是 Moore–Aronszajn 定理，但本报告主线从"核"这一侧展开。</div>
+</section>
+
+<section class="slide" id="p10">
+  <span class="pagetag">第 10 页</span>
+  <h2>进入第二章：核的再生核希尔伯特空间</h2>
+  <p>章节切换页，高亮第 2 部分 <strong>The Reproducing Kernel Hilbert Space of a Kernel</strong>。</p>
+  <p>过渡语：第一章我们建立了核、特征空间、正定函数这些基础，也看到了特征空间不唯一的"困扰"。从这一章开始，引入本报告的主角——<strong>再生核希尔伯特空间（RKHS）</strong>，并证明核与 RKHS 之间存在一一对应的完美关系。</p>
+</section>
+
+<section class="slide" id="p11">
+  <span class="pagetag">第 11 页</span>
+  <h2>记号约定：标量域与核截面</h2>
+  <h3>标量域（Scalar field）</h3>
+  <p>符号 \(\mathbb{K}\) 表示标量域：\(\mathbb{K} = \mathbb{R}\) 或 \(\mathbb{K} = \mathbb{C}\)。</p>
+  <ul>
+    <li>当 \(\mathbb{K} = \mathbb{R}\)：函数和内积都是实值的；</li>
+    <li>当 \(\mathbb{K} = \mathbb{C}\)：函数和内积可以是复值的。</li>
+  </ul>
+  <h3>核的记号（Kernel notation）</h3>
+  <ol class="body">
+    <li>双变量核：\(k : \mathcal{X}\times\mathcal{X}\to\mathbb{K}\)，\((x,y)\mapsto k(x,y)\)；</li>
+    <li><strong>固定第一个变量为 \(x\)</strong>，得到单变量函数（核截面）：\(k_x := k(x, \cdot) : \mathcal{X}\to\mathbb{K}\)；</li>
+    <li>在点 \(y\) 处求值：\(k_x(y) = k(x,y) \in \mathbb{K}\)。</li>
+  </ol>
+  <p>那个"点"（\(\cdot\)）标记的是<strong>自由变量</strong>：\(k(x, \cdot)\) 中第二个变量自由；\(k(\cdot, x)\) 中第一个变量自由。</p>
+  <div class="tip"><strong>讲解要点：</strong>核截面 \(k(\cdot, x)\) 是一个"函数"，是 RKHS 里的元素，是理解后面"再生性质"的关键，这个记号一定要习惯。</div>
+</section>
+
+<section class="slide" id="p12">
+  <span class="pagetag">第 12 页</span>
+  <h2>定义 4.18：再生核与 RKHS</h2>
+  <p>设 \(\mathcal{X} \neq \emptyset\)，\(H\) 是 \(\mathcal{X}\) 上的一个 \(\mathbb{K}\)-希尔伯特<strong>函数空间</strong>（元素本身就是函数）。</p>
+  <ol class="body">
+    <li>函数 \(k : \mathcal{X}\times\mathcal{X}\to\mathbb{K}\) 是 \(H\) 的<strong>再生核</strong>，如果满足：
+      <ul>
+        <li>\(k(\cdot, x) \in H\)（核截面属于该空间）；</li>
+        <li><strong>再生性质：</strong>\(f(x) = \langle f, k(\cdot, x)\rangle_H\)，对所有 \(x\in\mathcal{X}\) 和所有 \(f\in H\) 成立。</li>
+      </ul>
+    </li>
+    <li>空间 \(H\) 是 \(\mathcal{X}\) 上的 <strong>RKHS</strong>，如果对每个 \(x\in\mathcal{X}\)，<strong>Dirac 泛函（点求值泛函）</strong>
+      \[ \delta_x : H \to \mathbb{K}, \qquad \delta_x(f) := f(x) \]
+      都是<strong>连续的</strong>。
+    </li>
+  </ol>
+  <div class="tip"><strong>讲解要点：</strong>再生性质是灵魂——"在 \(x\) 处对 \(f\) 求值"等价于"把 \(f\) 与核截面 \(k(\cdot,x)\) 做内积"。"点求值连续"的直观意义是：范数接近的函数在<strong>每一点</strong>取值也接近，这在 \(L^2\) 等一般空间不成立，而 RKHS 恰恰保证了这一点。</div>
+</section>
+
+<section class="slide" id="p13">
+  <span class="pagetag">第 13 页</span>
+  <h2>什么是泛函？（What is a Functional?）</h2>
+  <ul>
+    <li><strong>普通函数：</strong>\(T : \mathbb{R} \to \mathbb{R}\)，输入一个数，输出一个数。</li>
+    <li><strong>泛函：</strong>\(L : H \to \mathbb{K}\)，输入一个函数，输出一个标量。</li>
+  </ul>
+  <p>泛函接收一个向量——通常是一整个函数——作为输入，返回一个标量。即 \(L : H \to \mathbb{K}\) 给每个 \(f\in H\) 分配一个数 \(L(f)\)。</p>
+  <h3>点求值（Point evaluation）</h3>
+  <p>固定 \(x\in\mathcal{X}\)，定义 4.18 引入的泛函是</p>
+  \[ \delta_x : H \to \mathbb{K}, \qquad \delta_x(f) = f(x). \]
+  <p>它接收整个函数 \(f\)，返回它在指定点 \(x\) 处的取值，称为<strong>点求值泛函</strong>或 <strong>Dirac 泛函</strong>。</p>
+  <div class="tip"><strong>讲解要点：</strong>普通函数是"数到数"的机器，泛函是"函数到数"的机器。\(\delta_x\) 就是一台"读数机"——塞进一整条曲线 \(f\)，只吐出它在横坐标 \(x\) 处的纵坐标值。RKHS 的本质要求就是：这台读数机是"稳定的"（连续的）。</div>
+</section>
+
+<section class="slide" id="p14">
+  <span class="pagetag">第 14 页</span>
+  <h2>引理 4.19：再生核也是核（断言 1）</h2>
+  <p>若 \(H\) 有再生核 \(k\)，则 \(H\) 是 RKHS，也是 \(k\) 的特征空间，其<strong>典范特征映射</strong>为 \(\Phi : \mathcal{X}\to H\)，\(\Phi(x) = k(\cdot, x)\)。</p>
+  <p><strong>断言 1：\(H\) 是一个 RKHS。</strong>固定 \(x\in\mathcal{X}\)。由于 \(k\) 是再生核，\(k(\cdot,x)\in H\)，且点求值可表示为</p>
+  \[ \delta_x(f) = f(x) = \langle f, k(\cdot, x)\rangle_H. \]
+  <p>由<strong>柯西–施瓦茨不等式</strong>，对每个 \(f\in H\)：</p>
+  \[ |\delta_x(f)| \le \|k(\cdot,x)\|_H\, \|f\|_H. \]
+  <p>这说明 \(\delta_x\) 是<strong>有界线性泛函</strong>，其算子范数满足</p>
+  \[ \|\delta_x\|_{H'} \le \|k(\cdot,x)\|_H = \sqrt{k(x,x)}. \]
+  <p>而<strong>线性泛函连续当且仅当有界</strong>。由于这对每个 \(x\) 都成立，据定义 4.18(ii)，\(H\) 是 RKHS。</p>
+  <div class="tip"><strong>讲解要点：</strong>逻辑链是"再生核存在 ⇒ 点求值可用内积表示 ⇒ 柯西–施瓦茨得到有界 ⇒ 有界即连续 ⇒ 是 RKHS"。顺带得到 \(\|\delta_x\| \le \sqrt{k(x,x)}\)，第三章会反复用到。</div>
+</section>
+
+<section class="slide" id="p15">
+  <span class="pagetag">第 15 页</span>
+  <h2>引理 4.19 续：H 是特征空间（断言 2）</h2>
+  <p>首先，映射 \(\Phi : \mathcal{X}\to H\)，\(\Phi(x) := k(\cdot, x)\) 是<strong>良定义的</strong>，因为再生核的定义就要求 \(k(\cdot,x)\in H\)。</p>
+  <p>固定 \(x, x'\in\mathcal{X}\)，令 \(f := k(\cdot, x') = \Phi(x') \in H\)。把再生性质应用到这个特定函数、在点 \(x\) 处求值：</p>
+  \[ k(x, x') = f(x) = \langle f, k(\cdot, x)\rangle_H = \langle k(\cdot,x'), k(\cdot,x)\rangle_H = \langle \Phi(x'), \Phi(x)\rangle_H. \]
+  <p>因此 \(k\) 恰好是 \(H\) 中两个特征之间的内积，所以 \(H\) 是 \(k\) 的特征空间，\(\Phi\) 是它的典范特征映射。\(\square\)</p>
+  <div class="tip"><strong>讲解要点：</strong>这回答了第 7 页的问题——只要空间有再生核，它<strong>自己</strong>就是一个特征空间，而特征映射就是核截面 \(k(\cdot, x)\)。这个"用核截面当特征"的构造非常优雅，称为"典范"特征映射。</div>
+</section>
+
+<section class="slide" id="p16">
+  <span class="pagetag">第 16 页</span>
+  <h2>定理 4.20：每个 RKHS 有唯一的核</h2>
+  <p>设 \(H\) 是 \(\mathcal{X}\) 上的 RKHS。则由</p>
+  \[ k(x, x') := \langle \delta_x, \delta_{x'}\rangle_H \qquad (x, x'\in\mathcal{X}) \]
+  <p>定义的函数 \(k\) 是 \(H\) 的<strong>唯一</strong>再生核（这里 \(\delta_x, \delta_{x'}\) 通过 Riesz 表示看作 \(H\) 中元素）。</p>
+  <p>此外，若 \((e_i)_{i\in I}\) 是 \(H\) 的一组<strong>标准正交基</strong>，则对所有 \(x, x'\in\mathcal{X}\)：</p>
+  \[ k(x, x') = \sum_{i\in I} e_i(x)\, \overline{e_i(x')}. \tag{4.9} \]
+  <p>（实数情形共轭可省略，写成 \(\sum_i e_i(x) e_i(x')\)。）</p>
+  <div class="callout">一个 RKHS 唯一地决定了它的再生核。</div>
+  <div class="tip"><strong>讲解要点：</strong>两层含义——(1) 存在唯一性：每个 RKHS 恰好有一个再生核；(2) 公式 (4.9) 给出核的"级数展开"：知道一组标准正交基就能把核写成基函数乘积之和（Mercer 展开的雏形）。</div>
+</section>
+
+<section class="slide" id="p17">
+  <span class="pagetag">第 17 页</span>
+  <h2>定理 4.20 证明总览：两部分</h2>
+  <h3>第 1 部分：存在性与唯一性</h3>
+  <ul>
+    <li>用定理 A.5.12（Riesz 表示定理）表示每一个点求值泛函；</li>
+    <li>证明这样定义的 \(k\) 满足再生性质；</li>
+    <li>证明不可能存在另一个不同的再生核（唯一性）。</li>
+  </ul>
+  <h3>第 2 部分：标准正交基表示</h3>
+  \[ k(x, x') = \sum_{i\in I} e_i(x)\, \overline{e_i(x')}. \tag{4.9} \]
+  <div class="callout">证明主线：表示点求值 \(\Longrightarrow\) 辨识出核 \(\Longrightarrow\) 在标准正交基下展开。</div>
+</section>
+
+<section class="slide" id="p18">
+  <span class="pagetag">第 18 页</span>
+  <h2>定理 4.20 证明 第 1a 部分：再生性质</h2>
+  <p>核心工具是 <strong>Riesz 表示定理</strong>（书中记为 Theorem A.5.12）：存在一个<strong>保距的反线性同构</strong></p>
+  \[ I : H' \longrightarrow H, \]
+  <p>它把每个连续泛函 \(g' \in H'\) 映到它在 \(H\) 中的唯一<strong>表示元</strong> \(Ig' \in H\)，使得</p>
+  \[ g'(f) = \langle f, Ig'\rangle_H \qquad (f\in H). \]
+  <p>（"反线性"是因为复情形下 Riesz 映射对标量取共轭；实情形下就是线性的。）应用到点求值泛函，其表示元仍记作 \(\delta_x\)。则对 \(x, x'\in\mathcal{X}\)：</p>
+  \[ k(x, x') = \langle \delta_x, \delta_{x'}\rangle_H = \delta_x(I\delta_{x'}) = (I\delta_{x'})(x). \]
+  <p>因此得到关键等式：</p>
+  \[ k(\cdot, x') = I\delta_{x'} \in H. \]
+  <div class="tip"><strong>讲解要点：</strong>这一步把"抽象定义的核"和"具体的核截面"联系起来——核截面正是点求值泛函 \(\delta_{x'}\) 通过 Riesz 表示得到的函数，且自动属于 \(H\)，满足再生核定义的第一个条件。</div>
+</section>
+
+<section class="slide" id="p19">
+  <span class="pagetag">第 19 页</span>
+  <h2>定理 4.20 证明 第 1a 部分：验证再生性</h2>
+  <p>对每个 \(f\in H\) 和 \(x'\in\mathcal{X}\)，结合 Riesz 表示定理与上一页的 \(k(\cdot,x') = I\delta_{x'}\)：</p>
+  \[ f(x') = \delta_{x'}(f) = \langle f, I\delta_{x'}\rangle_H = \langle f, k(\cdot, x')\rangle_H. \]
+  <p>于是定义 4.18 中再生核的<strong>两个要求</strong>都成立：</p>
+  \[ k(\cdot, x')\in H, \qquad f(x') = \langle f, k(\cdot,x')\rangle_H. \]
+  <div class="callout">因此 \(k\) 是 \(H\) 的一个再生核。存在性部分完成。</div>
+</section>
+
+<section class="slide" id="p20">
+  <span class="pagetag">第 20 页</span>
+  <h2>定理 4.20 证明 第 1b 部分：唯一性</h2>
+  <p>设 \(\tilde{k}\) 是同一 RKHS \(H\) 的<strong>任意</strong>再生核。则对每个固定的 \(x'\in\mathcal{X}\)：</p>
+  \[ f(x') = \langle f, \tilde{k}(\cdot, x')\rangle_H \qquad (f\in H). \]
+  <p>这说明 \(\tilde{k}(\cdot, x')\) 也是泛函 \(\delta_{x'}\) 的表示元。但 Riesz 表示定理保证<strong>表示元唯一</strong>。由于 \(k(\cdot, x') = I\delta_{x'}\)，必有</p>
+  \[ \tilde{k}(\cdot, x') = I\delta_{x'} = k(\cdot, x') \qquad (x'\in\mathcal{X}). \]
+  <p>因此 \(\tilde{k} = k\)，即 \(k\) 是 \(H\) 唯一的再生核。</p>
+  <div class="tip"><strong>讲解要点：</strong>唯一性本质上就是"Riesz 表示元唯一"的直接推论。任何再生核的截面都必须是同一点求值泛函的表示元，而表示元只有一个，所以核也只有一个。第 1 部分完成。</div>
+</section>
+
+<section class="slide" id="p21">
+  <span class="pagetag">第 21 页</span>
+  <h2>定理 4.20 证明 第 2a 部分：展开核截面</h2>
+  <p>设 \((e_i)_{i\in I}\) 是 \(H\) 的标准正交基。由于 \(k(\cdot, x')\in H\)，它有希尔伯特空间的<strong>傅里叶展开</strong>：</p>
+  \[ k(\cdot, x') = \sum_{i\in I} \langle k(\cdot, x'), e_i\rangle_H\, e_i, \]
+  <p>级数在 RKHS 范数下收敛。用<strong>再生性质</strong>计算系数：\(e_i(x') = \langle e_i, k(\cdot, x')\rangle_H\)。由<strong>共轭对称性</strong>：</p>
+  \[ \langle k(\cdot, x'), e_i\rangle_H = \overline{\langle e_i, k(\cdot, x')\rangle_H} = \overline{e_i(x')}. \]
+  <p>于是核截面展开为</p>
+  \[ k(\cdot, x') = \sum_{i\in I} \overline{e_i(x')}\, e_i \quad \text{在 } H \text{ 中}. \]
+  <div class="tip"><strong>讲解要点：</strong>关键是<strong>把展开系数用函数值算出来</strong>。傅里叶系数本是抽象内积，借助再生性质变成了具体函数值 \(\overline{e_i(x')}\)，为下一页推导 (4.9) 铺路。</div>
+</section>
+
+<section class="slide" id="p22">
+  <span class="pagetag">第 22 页</span>
+  <h2>定理 4.20 证明 第 2b 部分：公式 (4.9)</h2>
+  <p>由于点求值泛函 \(\delta_x\) 是<strong>连续的</strong>，把它作用到上一页 RKHS-范数收敛的展开式时，可以<strong>与求和交换次序</strong>（连续泛函保持极限）：</p>
+  \[ k(x, x') = \delta_x\big(k(\cdot, x')\big) = \delta_x\Big(\sum_{i\in I} \overline{e_i(x')}\, e_i\Big) = \sum_{i\in I} e_i(x)\, \overline{e_i(x')}. \]
+  <p>于是</p>
+  \[ k(x, x') = \sum_{i\in I} e_i(x)\, \overline{e_i(x')}. \tag{4.9} \]
+  <p>这就完成了定理 4.20 的两个部分。\(\square\)</p>
+  <div class="tip"><strong>讲解要点：</strong>"点求值连续"这个性质用得极其关键——正因为 RKHS 里点求值连续，才能把 \(\delta_x\) 移进无穷求和逐项作用。若换成一般空间，这一步不合法。这再次凸显 RKHS 定义的精妙。</div>
+</section>
+
+<section class="slide" id="p23">
+  <span class="pagetag">第 23 页</span>
+  <h2>定理 4.21：每个核有唯一的 RKHS</h2>
+  <p>设 \(\mathcal{X}\neq\emptyset\)，\(k\) 是核，具有特征空间 \(H_0\) 和特征映射 \(\Phi_0 : \mathcal{X}\to H_0\)。定义函数空间</p>
+  \[ H := \big\{ f : \mathcal{X}\to\mathbb{K} \ :\ \exists\, w\in H_0,\ f(x) = \langle w, \Phi_0(x)\rangle_{H_0}\ \forall x \big\}, \]
+  <p>并配备范数</p>
+  \[ \|f\|_H := \inf\big\{ \|w\|_{H_0} \ :\ w\in H_0,\ f = \langle w, \Phi_0(\cdot)\rangle_{H_0} \big\}. \]
+  <p>那么 \(H\) 是<strong>唯一</strong>以 \(k\) 为再生核的 RKHS。</p>
+  <div class="callout">一个核 \(\Longrightarrow\) 唯一的一个 RKHS \(H\)。</div>
+  <div class="tip"><strong>讲解要点：</strong>\(H\) 里每个函数都是"某个特征向量 \(w\) 与特征映射做内积"。范数用 <strong>inf（下确界）</strong>，是因为同一个 \(f\) 可能对应多个 \(w\)（回忆第 7 页），取范数最小的那个（后面叫"有效表示元"）。结合定理 4.20 与 4.21，得到最漂亮的结论：<strong>核与 RKHS 一一对应</strong>。</div>
+</section>
+
+<section class="slide" id="p24">
+  <span class="pagetag">第 24 页</span>
+  <h2>定理 4.21 证明 步骤 1：有效特征空间</h2>
+  <p>定义算子 \(V : H_0 \to H\)，\((Vw)(x) = \langle w, \Phi_0(x)\rangle_{H_0}\)。由 \(H\) 的定义，\(V\) 线性且<strong>满射</strong>。</p>
+  <p>它的<strong>零空间 \(\ker V\) 是闭的</strong>：若 \(w_m\in\ker V\) 且 \(w_m \to w\)，则对每个 \(x\)：</p>
+  \[ \langle w, \Phi_0(x)\rangle = \lim_{m\to\infty}\langle w_m, \Phi_0(x)\rangle = 0, \]
+  <p>故 \(w\in\ker V\)。于是做<strong>正交分解</strong>：</p>
+  \[ \widehat{H} := (\ker V)^\perp, \qquad H_0 = \ker V \oplus \widehat{H}. \]
+  <p>限制算子 \(V|_{\widehat{H}} : \widehat{H}\to H\) 是<strong>单射</strong>；也是<strong>满射</strong>：若 \(f = Vw\)，\(w = w_0 + \widehat{w}\)（\(w_0\in\ker V\)，\(\widehat{w}\in\widehat{H}\)），则 \(f = Vw = V\widehat{w}\)。因此每个 \(f\in H\) 都有<strong>唯一的有效表示元</strong> \(\widehat{w}\in\widehat{H}\)。</p>
+  <div class="tip"><strong>讲解要点：</strong>技术核心——多个 \(w\) 只在零空间方向有差别；把零空间"商掉"（限制到正交补 \(\widehat{H}\)），每个函数就对应唯一"最经济"的表示元 \(\widehat{w}\)，正对应上一页范数定义里取到下确界的 \(w\)。</div>
+</section>
+
+<section class="slide" id="p25">
+  <span class="pagetag">第 25 页</span>
+  <h2>定理 4.21 证明 步骤 2：范数与完备性</h2>
+  <p>若 \(f = V\widehat{w}\)（\(\widehat{w}\in\widehat{H}\)），则 \(f\) 的每个原像形如 \(w_0 + \widehat{w}\)（\(w_0\in\ker V\)）。由<strong>正交性（勾股定理）</strong>：</p>
+  \[ \|f\|_H^2 = \inf_{w_0\in\ker V} \|w_0 + \widehat{w}\|_{H_0}^2 = \inf_{w_0\in\ker V}\big( \|w_0\|_{H_0}^2 + \|\widehat{w}\|_{H_0}^2 \big) = \|\widehat{w}\|_{H_0}^2 = \big\|(V|_{\widehat{H}})^{-1} f\big\|_{\widehat{H}}^2. \]
+  <p>下确界在 \(w_0 = 0\) 时取到。这说明 \(V|_{\widehat{H}}\) 是<strong>保距同构</strong>。由于 \(\widehat{H}\) 是希尔伯特空间 \(H_0\) 的<strong>闭子空间</strong>，它<strong>完备</strong>；因此 <strong>\(H\) 是希尔伯特空间</strong>。</p>
+  <div class="tip"><strong>讲解要点：</strong>勾股定理把"inf 范数"算出了显式值——恰好等于有效表示元的范数。这解释了为什么第 23 页用 inf 定义范数：这样正好让 \(H\) 与 \(\widehat{H}\) 保距同构，从而把完备性搬过来。</div>
+</section>
+
+<section class="slide" id="p26">
+  <span class="pagetag">第 26 页</span>
+  <h2>定理 4.21 证明 步骤 3：再生性质</h2>
+  <p>对每个 \(x\in\mathcal{X}\)，核截面可写成</p>
+  \[ k(\cdot, x) = \langle \Phi_0(x), \Phi_0(\cdot)\rangle_{H_0} = V\Phi_0(x) \in H. \]
+  <p>其次，若 \(w\in\ker V\)，则 \(\langle w, \Phi_0(x)\rangle = (Vw)(x) = 0\)，所以 \(\Phi_0(x)\in(\ker V)^\perp = \widehat{H}\)。</p>
+  <p>由于 \(V|_{\widehat{H}}\) 保距，对 \(f\in H\)：</p>
+  \[ f(x) = \big\langle (V|_{\widehat{H}})^{-1} f,\ \Phi_0(x)\big\rangle_{H_0} = \langle f, V\Phi_0(x)\rangle_H = \langle f, k(\cdot, x)\rangle_H. \]
+  <p>因此 \(k\) 是 \(H\) 的再生核；由引理 4.19，\(H\) 是 RKHS。</p>
+  <div class="tip"><strong>讲解要点：</strong>用保距同构 \(V|_{\widehat{H}}\) 把 \(H_0\) 的内积"翻译"成 \(H\) 的内积，验证再生性质。至此存在性完成——从任意核 \(k\) 出发，成功构造出以它为再生核的 RKHS。</div>
+</section>
+
+<section class="slide" id="p27">
+  <span class="pagetag">第 27 页</span>
+  <h2>定理 4.21 证明 步骤 4a：公共稠密子空间</h2>
+  <p>定义<strong>有限核张成空间</strong>：</p>
+  \[ H_{\text{pre}} := \operatorname{span}\{ k(\cdot, x) : x\in\mathcal{X}\}. \]
+  <p>设 \(\widetilde{H}\) 是<strong>任意</strong>以 \(k\) 为再生核的 RKHS。由于 \(k(\cdot, x)\in\widetilde{H}\)，所以 \(H_{\text{pre}} \subset \widetilde{H}\)。</p>
+  <p><strong>声称 \(H_{\text{pre}}\) 稠密。</strong>反证：若不稠密，则存在非零 \(f\in(H_{\text{pre}})^\perp\)。取 \(x\) 使 \(f(x)\neq 0\)。但由再生性质</p>
+  \[ 0 = \langle f, k(\cdot, x)\rangle_{\widetilde{H}} = f(x), \]
+  <p>矛盾。因此 \(\overline{H_{\text{pre}}}^{\,\widetilde{H}} = \widetilde{H}\)。</p>
+  <div class="callout">同一个有限核张成空间 \(H_{\text{pre}}\)，在每一个以 \(k\) 为再生核的 RKHS 中都稠密。</div>
+  <div class="tip"><strong>讲解要点：</strong>用"正交补里的非零元必在某点非零、但又必须处处为零"的矛盾，证明核截面张成空间稠密。不管有多少候选 RKHS，它们都共享同一个稠密"骨架" \(H_{\text{pre}}\)。</div>
+</section>
+
+<section class="slide" id="p28">
+  <span class="pagetag">第 28 页</span>
+  <h2>定理 4.21 证明 步骤 4b：范数由 k 决定</h2>
+  <p>设 \(\widetilde{H}\) 是任意以 \(k\) 为再生核的 RKHS。取 \(f = \sum_{i=1}^{n}\alpha_i\, k(\cdot, x_i) \in H_{\text{pre}}\)，用再生性质算范数平方：</p>
+  \[ \|f\|_{\widetilde{H}}^2 = \sum_{i,j=1}^{n}\alpha_i \overline{\alpha_j}\, \langle k(\cdot, x_i), k(\cdot, x_j)\rangle_{\widetilde{H}} = \sum_{i,j=1}^{n}\alpha_i \overline{\alpha_j}\, k(x_j, x_i). \]
+  <p>关键：<strong>右端只依赖于核 \(k\)，完全不依赖所选 RKHS</strong>。因此任意两个以 \(k\) 为再生核的 RKHS，在公共稠密子空间 \(H_{\text{pre}}\) 上具有相同的内积与范数：</p>
+  \[ \|f\|_{H_1} = \|f\|_{H_2} \qquad (f\in H_{\text{pre}}). \]
+  <div class="tip"><strong>讲解要点：</strong>这是唯一性证明的心脏。核截面内积由再生性质完全归结为核值，而核值是给定的、客观的，所以两个候选空间在 \(H_{\text{pre}}\) 上"长得一模一样"。</div>
+</section>
+
+<section class="slide" id="p29">
+  <span class="pagetag">第 29 页</span>
+  <h2>定理 4.21 证明 步骤 5：唯一性</h2>
+  <p>设 \(H_1, H_2\) 是两个以 \(k\) 为再生核的 RKHS。上一步已证 \(H_{\text{pre}}\) 在两空间都稠密，且范数在其上一致。</p>
+  <p>任取 \(f\in H_1\)，选 \(f_m\in H_{\text{pre}}\) 使 \(\|f_m - f\|_{H_1}\to 0\)。由范数一致，\((f_m)\) 在 \(H_2\) 中也是<strong>柯西序列</strong>，故 \(f_m \to g\in H_2\)。而 <strong>RKHS 范数收敛蕴含逐点收敛</strong>，所以</p>
+  \[ f(x) = \lim_m f_m(x) = g(x) \qquad (x\in\mathcal{X}), \]
+  <p>即 \(f = g\in H_2\)。范数也一致：</p>
+  \[ \|f\|_{H_1} = \lim_m \|f_m\|_{H_1} = \lim_m \|f_m\|_{H_2} = \|f\|_{H_2}. \]
+  <p>因此 \(H_1\) 保距地含于 \(H_2\)；交换角色得反向包含，故 \(H_1 = H_2\) 且范数相等。\(\square\)</p>
+  <div class="tip"><strong>讲解要点：</strong>标准的"稠密 + 完备 ⇒ 整体一致"论证。既然两空间在稠密骨架上完全相同、又都完备，就是同一个空间。至此核与 RKHS 的一一对应关系完整建立。</div>
+</section>
+
+<section class="slide" id="p30">
+  <span class="pagetag">第 30 页</span>
+  <h2>第二章小结（Chapter 2 Summary）</h2>
+  <ol class="body">
+    <li><strong>定义 4.18</strong> 通过"点求值连续"刻画了再生核与 RKHS；</li>
+    <li><strong>引理 4.19</strong> 指出映射 \(x\mapsto k(\cdot, x)\) 是典范特征映射；</li>
+    <li><strong>定理 4.20</strong>：每个 RKHS 唯一地决定一个再生核；</li>
+    <li><strong>定理 4.21</strong>：每个核唯一地决定一个以它为再生核的 RKHS。</li>
+  </ol>
+  <div class="callout">本章核心思想：\(\text{核} \iff \text{唯一的 RKHS}.\)</div>
+  <div class="tip"><strong>讲解收尾：</strong>第二章建立了核方法理论中最优美的对偶关系——核和 RKHS 双向唯一对应。选择一个核，就等于选择了一个特定的函数空间及其几何结构；反之亦然。有了这个对应，第三章就能研究：核的各种"好性质"（有界、连续、可微）如何反映到空间中的每一个函数上。</div>
+</section>
+
+<div class="divider">— 第 1–30 页 讲稿结束 · 后续第 31–66 页可继续生成 —</div>
+
+</div>
+</body>
+</html>
