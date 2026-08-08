@@ -1,0 +1,16 @@
+{
+  "name": "Mintie365 profile & lecture notes",
+  "terminals": [
+    {
+      "name": "static-preview",
+      "command": "python3 -m http.server 8000 --bind 0.0.0.0 --directory .",
+      "description": "Static file server that previews the repo's Markdown/HTML content (README.md and the RKHS lecture-note HTML pages). Open http://localhost:8000/ to browse the checked-out branch's files."
+    }
+  ],
+  "ports": [
+    {
+      "name": "static preview",
+      "port": 8000
+    }
+  ]
+}
